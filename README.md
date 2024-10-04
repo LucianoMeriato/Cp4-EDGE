@@ -26,61 +26,69 @@ Ler o nível de luminosidade e publicar os dados no broker MQTT.
 # Estrutura do Código
 
 # 1. Configurações Iniciais
-O código define várias configurações editáveis no início, como:
 
-SSID e PASSWORD: Credenciais da rede Wi-Fi.
-BROKER_MQTT e BROKER_PORT: Endereço IP e porta do broker MQTT.
-Tópicos: Tópicos para assinatura e publicação de mensagens.
-ID_MQTT: Identificador do dispositivo MQTT.
+O código define várias configurações essenciais, como:
+
+	•	SSID e PASSWORD: As credenciais da rede Wi-Fi que o ESP32 irá utilizar.
+	•	BROKER_MQTT e BROKER_PORT: Endereço IP e porta do broker MQTT para a comunicação.
+	•	Tópicos MQTT: Definidos para assinatura e publicação de mensagens, divididos entre controle do LED e envio de dados de sensores.
+	•	ID_MQTT: Identificação única do dispositivo no broker MQTT, essencial para evitar conflitos com outros dispositivos conectados ao mesmo broker.
 
 # 2. Inicialização
+
 setup()
-A função setup() é chamada uma vez ao iniciar o dispositivo. Ela inicializa o LED, a comunicação serial, a conexão Wi-Fi e a configuração do MQTT. Após um atraso, o estado inicial do LED é enviado ao broker.
+Essa função é chamada uma vez quando o ESP32 é inicializado e realiza as seguintes tarefas:
+
+	•	Inicializa os pinos de saída (LED e outros indicadores).
+	•	Configura a comunicação serial para monitoramento.
+	•	Conecta à rede Wi-Fi e ao broker MQTT.
+	•	Publica o estado inicial do LED no broker, indicando que ele está desligado.
 
 # 3. Loop Principal
+
 loop()
-A função loop() é executada repetidamente e verifica as conexões Wi-Fi e MQTT, envia o estado do LED e processa as mensagens recebidas.
+Essa função é chamada repetidamente e tem as seguintes responsabilidades:
 
-# 4. Conexões Wi-Fi e MQTT
-initWiFi() e reconectWiFi()
-Essas funções gerenciam a conexão com a rede Wi-Fi, tentando se reconectar se a conexão for perdida.
+	•	Verificar as conexões Wi-Fi e MQTT, reconectando automaticamente em caso de perda.
+	•	Enviar o estado atual do LED para o broker MQTT.
+	•	Ler e publicar os valores de luminosidade de um potenciômetro e a leitura de um sensor de umidade/temperatura (DHT11).
+	•	Controlar os LEDs indicadores de acordo com a luminosidade lida.
 
-initMQTT() e reconnectMQTT()
-Essas funções configuram a conexão com o broker MQTT e tentam reconectar quando necessário.
+# 4. Conexão Wi-Fi e MQTT
+
+As funções initWiFi(), reconectWiFi(), initMQTT() e reconnectMQTT() gerenciam a conexão com a rede Wi-Fi e o broker MQTT. Elas tentam se reconectar automaticamente sempre que uma conexão for perdida, garantindo que o dispositivo esteja sempre online.
 
 # 5. Callback MQTT
+
 mqtt_callback()
-Essa função é chamada quando uma nova mensagem é recebida em um tópico inscrito. Dependendo do conteúdo da mensagem, o LED é ligado ou desligado.
+Essa função é acionada sempre que uma mensagem é recebida em um dos tópicos inscritos. Dependendo do conteúdo da mensagem recebida, ela pode ligar ou desligar o LED onboard.
+
+	•	Mensagem “hosp7771@on|”: Liga o LED.
+	•	Mensagem “hosp7771@off|”: Desliga o LED.
 
 # 6. Monitoramento de Luminosidade
-handleLuminosity()
-Esta função lê o valor de um potenciômetro conectado ao pino 34 e publica o nível de luminosidade em um tópico específico.
+
+analogRead() e map()
+O valor do potenciômetro é lido através da função analogRead(), e a luminosidade é normalizada para uma escala de 0% a 100%. Esse valor é então publicado em um tópico MQTT específico para monitoramento remoto.
 
 # 7. Controle do LED
-InitOutput(), VerificaConexoesWiFIEMQTT(), e EnviaEstadoOutputMQTT()
-Essas funções inicializam o pino do LED, verificam as conexões e enviam o estado atual do LED para o broker.
 
-# Compilação e Execução
-Instalar a IDE: Certifique-se de ter a Arduino IDE instalada com suporte para ESP32.
-
-Bibliotecas: Instale as bibliotecas necessárias:
-
-WiFi
-PubSubClient
-
-Carregar o Código: Copie e cole o código acima na IDE, fazendo as modificações necessárias nas configurações.
-
-Conectar ao ESP32: Selecione a porta correta e faça o upload do código para o ESP32.
-
-Monitor Serial: Abra o Monitor Serial para acompanhar a saída e as mensagens.
-
-
-# Conclusão
-Este projeto demonstrou como integrar o microcontrolador ESP32 a uma rede Wi-Fi e a um broker MQTT, possibilitando a comunicação em tempo real e o controle de dispositivos. Ao implementar o controle de um LED e a leitura de luminosidade através de um potenciômetro, aprendemos sobre os conceitos fundamentais de IoT e a aplicação prática de protocolos de comunicação como o MQTT.
-
-Durante o desenvolvimento, foram abordados aspectos importantes, como a configuração de conexões, a manipulação de mensagens e a interação com sensores e atuadores. Este projeto não só fornece uma base sólida para entender a comunicação entre dispositivos, mas também incentiva a exploração de novas funcionalidades, como a adição de mais sensores ou o desenvolvimento de uma interface de usuário.
-
+As funções InitOutput(), EnviaEstadoOutputMQTT() e VerificaConexoesWiFIEMQTT() controlam o LED onboard e garantem a comunicação com o broker. Elas publicam o estado do LED (ligado ou desligado) e garantem que as conexões Wi-Fi e MQTT estejam ativas.
 
 # Execuçâo do Projeto 
+
+
+
+
+https://github.com/user-attachments/assets/4fa16ba3-3a7f-4d2f-83b8-9541c3d373a8
+
+
+
+# RM
+  # eric 557082
+
+  # Luciano 554546
+
+  # Pietro 57283
 
 
